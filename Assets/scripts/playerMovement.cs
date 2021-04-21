@@ -20,8 +20,15 @@ public class playerMovement : MonoBehaviour
     private Vector3 velocity;
     private CharacterController controller;
     private Animator animator;
+    private bool died;
+    private AudioManager am;
+    private enemiesController enemiesControllerScript;
+
     private void Start()
     {
+        enemiesControllerScript = FindObjectOfType<enemiesController>();
+        am = FindObjectOfType<AudioManager>();
+
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         animator = GetComponent<Animator>();
@@ -31,13 +38,21 @@ public class playerMovement : MonoBehaviour
 
         transform.rotation = thetas;
         transform.localScale = t.scale;
+       
 
     }
     private void Update()
     {
-        Move();
-        
+        if (!died)
+            Move();
+        if (Score.boxScore>=10)
+        {
+            am.Play("win", true);
+            pauseMenuScript.youWon();
+        }
+
     }
+    
     private void Move()
     {
         Rotate();
@@ -101,6 +116,13 @@ public class playerMovement : MonoBehaviour
 
         velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
     }
+
+    private void resetPosition()
+    {
+        animator.SetFloat("Speed", 0, 0.1f, Time.deltaTime);
+
+        transform.position = new Vector3(0, 10, 1);
+    }
     private void Rotate()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensetivity * Time.deltaTime;
@@ -111,7 +133,66 @@ public class playerMovement : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensetivity * Time.deltaTime;
         transform.Rotate(Vector3.up, mouseX);
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "EnemyBullet")
+        {
+            if (Score.currentHealth>0)
+            {
+                Score.currentHealth -= 50;
+                if (Score.currentHealth<=0)
+                {
+                    Score.lifes -= 1;
+                    if (Score.lifes<=0)
+                    {
+                        am.Play("death", true);
+
+                        pauseMenuScript.gameOver();
+                        return;
+                    }
+                    animator.SetBool("isDying", true);
+                    animator.SetBool("isLiving", true);
+                    animator.SetBool("isBackToLive", true);
+                    am.Play("pain",true);
+                    Invoke("live", 2.0f);
+                    StartCoroutine(DisableScript());
+                    
+                    Score.currentHealth = 100;
+                }
+            }
+        }
+        if (collision.gameObject.tag == "Bullet")
+        {
+            Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), GetComponent<Collider>());
+        }
+    }
+
+    private void live()
+    {
+        animator.SetBool("isDying", false);
+    }
+
+    IEnumerator DisableScript()
+    {
+        enemiesControllerScript.enabled = false;
+
+        died = true;
+        yield return new WaitForSeconds(14f);
+        animator.SetBool("isDying", false);
+        animator.SetBool("isLiving", false);
+        animator.SetBool("isBackToLive", false);
+        died = false;
+
+        enemiesControllerScript.enabled = true;
+    }
+
+
+
+
 }
+
+
 
 [System.Serializable]
 class playerJson

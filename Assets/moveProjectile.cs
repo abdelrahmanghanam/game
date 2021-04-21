@@ -14,6 +14,7 @@ public class moveProjectile : MonoBehaviour
         {
             collided = true;
             Instantiate(explosionEffect, transform.position, Quaternion.identity);
+            FindObjectOfType<AudioManager>().Play("bomb",false);
             Destroy(gameObject);
 
 
@@ -22,6 +23,5 @@ public class moveProjectile : MonoBehaviour
     public void destroyBullet()
     {
         Destroy(gameObject, 2.0f);
-
     }
 }

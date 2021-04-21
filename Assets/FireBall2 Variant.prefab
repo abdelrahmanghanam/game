@@ -26,6 +26,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: FireBall2 Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 303589770224037903, guid: 8afaa57770a942446b4f81751e58c199,
+        type: 3}
+      propertyPath: m_TagString
+      value: Projectile
+      objectReference: {fileID: 0}
     - target: {fileID: 523478770151529604, guid: 8afaa57770a942446b4f81751e58c199,
         type: 3}
       propertyPath: explosionEffect

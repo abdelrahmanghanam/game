@@ -26,27 +26,32 @@ public class shootProjectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Fire1") && currentBullet != null && !moved)
+        if (!pauseMenuScript.gameIsPaused)
         {
-            animator.SetBool("IsFiring", true); 
-            moveIt();
-            moved = true;
-        }
-        else
-        {
-            animator.SetBool("IsFiring", false);
-        }
-        if (Input.GetButtonDown("Fire1")&&currentBullet==null)
-        {
-            shootProj();
-            moved = false;
-        }
-        
-        //try follow
-        if (currentBullet!=null&&!moved)
-        {
-            currentBullet.transform.position = cam.transform.position;
-            currentBullet.transform.rotation = cam.transform.rotation;
+            if (Input.GetButtonDown("Fire1") && currentBullet != null && !moved)
+            {
+                animator.SetBool("IsFiring", true);
+                moveIt();
+                moved = true;
+            }
+            else
+            {
+                animator.SetBool("IsFiring", false);
+            }
+            if (Input.GetButtonDown("Fire1") && currentBullet == null && Score.bottlesScore > 0)
+            {
+                shootProj();
+                moved = false;
+                Score.bottlesScore--;
+            }
+
+            //try follow
+            if (currentBullet != null && !moved)
+            {
+                currentBullet.transform.position = firePoint.transform.position+firePoint.transform.forward.normalized*0.1f;
+                currentBullet.transform.rotation = firePoint.transform.rotation;
+            }
+
         }
 
         
@@ -59,14 +64,14 @@ public class shootProjectile : MonoBehaviour
     }
     private void InsetintiateProj(Transform fp)
     {
-        var projectileObject = Instantiate(projectile, fp.position, Quaternion.identity) as GameObject;
+        var projectileObject = Instantiate(projectile, firePoint.transform.position + firePoint.transform.forward.normalized * 0.1f, Quaternion.identity) as GameObject;
         currentBullet = projectileObject;
 //        moveIt();
     }
     private void moveIt()
     {
         ParticleSystem ps =  currentBullet.GetComponentInChildren<ParticleSystem>();
-        print(ps);
+
 
 
         ParticleSystem.ColorOverLifetimeModule settings = ps.colorOverLifetime;

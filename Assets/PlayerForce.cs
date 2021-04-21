@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerForce : MonoBehaviour
 {
     [SerializeField] private float playerWeight;
+    private float defaultSpeed = 8;
     private void OnCollisionEnter(Collision collision)
     {
 
@@ -14,29 +15,59 @@ public class PlayerForce : MonoBehaviour
         Vector3 collisionForce = impulse / Time.fixedDeltaTime;
         //0.1 left, -0.1 right in the point  y=1 center
         Vector3 point= transform.InverseTransformPoint(contact.point);
-        print(point);
-        print(impulse.magnitude);
-        print(collision.gameObject);
+        float force = impulse.magnitude;
+        float angle = CalcAngle(force);
+        float speedFactor = CalcSpeed(force);
+        if (speedFactor<=1)
+        {
+            cam.shakeCamera(0.1f, 0.05f);
+        }
         if (point.x<0)
         {
-            print("right");
+            print("right"+angle);
+            cam.RotateCam(angle, speedFactor * defaultSpeed, 0);
             //right
         }
-        if (point.x>0)
+        else if (point.x>0)
         {
             //left 
-            print("left");
+            print("left"+angle);
+            cam.RotateCam(-1*angle, speedFactor * defaultSpeed, 0);
 
         }
-        if (point.x==0)
+        else if (point.x==0)
         {
             //back
-            print("center");
+            print("center"+angle);
         }
-        cam.RotateCam(90,4,0);
+        cam.beDizzy(4);
+        
         
 
 
         
+    }
+    public float CalcAngle(float force)
+    {
+        if (force <= playerWeight)
+        {
+            return force / playerWeight * 90;
+        }
+        else
+        {
+            return 90;
+        }
+    }
+
+    public float CalcSpeed(float force)
+    {
+        if (force<=playerWeight)
+        {
+            return 1;
+        }
+        else
+        {
+            return force / playerWeight;
+        }
     }
 }

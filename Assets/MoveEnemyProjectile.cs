@@ -14,7 +14,6 @@ public class MoveEnemyProjectile : MonoBehaviour
         {
             collided = true;
             Instantiate(explosionEffect, transform.position, Quaternion.identity);
-            FindObjectOfType<AudioManager>().Play("bomb",false);
             Destroy(gameObject);
         }
     }

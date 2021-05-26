@@ -17,10 +17,6 @@ public class AudioManager : MonoBehaviour
         }
         
     }
-    private void Start()
-    {
-        Play("base",true);
-    }
 
     public void Play(string clipName,bool checkPlaying)
     {

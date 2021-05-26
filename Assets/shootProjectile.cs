@@ -20,6 +20,7 @@ public class shootProjectile : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+        cam = GetComponentInChildren<Camera>();
 
     }
 
